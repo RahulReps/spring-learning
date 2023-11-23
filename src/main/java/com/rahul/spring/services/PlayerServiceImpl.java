@@ -7,7 +7,7 @@ import java.util.*;
 @Service
 public class PlayerServiceImpl implements PlayerService {
     private Map<UUID, Players> playerList;
-    PlayerServiceImpl(){
+    public PlayerServiceImpl(){
         playerList = new HashMap<>();
 
         Players player1 = Players.builder()
