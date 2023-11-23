@@ -63,7 +63,8 @@ public class PlayerServiceImpl implements PlayerService {
                 .jerseyNo(player.getJerseyNo())
                 .playStyle(player.getPlayStyle())
                 .build();
-        return playerList.put(savePlayer.getId(),savePlayer);
+        playerList.put(savePlayer.getId(),savePlayer);
+        return savePlayer;
     }
 
     @Override

@@ -30,11 +30,11 @@ public class PlayerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Players> addPlayers(@RequestBody Players player){
-        if(playerService.addPlayer(player)==null){
-            return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
+    public ResponseEntity addPlayers(@RequestBody Players player){
+        if(playerService.addPlayer(player)!=null){
+            return new ResponseEntity(HttpStatus.CREATED);
         }
-        return new ResponseEntity<Players>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/edit")
