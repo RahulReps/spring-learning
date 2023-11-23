@@ -28,7 +28,14 @@ public class BeerControllerTest {
     PlayerService playerService;
     PlayerServiceImpl playerServiceImpl = new PlayerServiceImpl();
 
+    @Test
+    void getPlayers() throws Exception{
+        given(playerService.getAllPlayers()).willReturn(playerServiceImpl.getAllPlayers());
 
+        mockMvc.perform(get("/players/players")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)));
+    }
     @Test
     void getPlayerById() throws Exception{
 
