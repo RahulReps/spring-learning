@@ -2,6 +2,7 @@ package com.rahul.spring.services;
 
 import com.rahul.spring.model.Players;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 @Service
@@ -88,5 +89,26 @@ public class PlayerServiceImpl implements PlayerService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    public void patchPlayer(UUID id, Players players) {
+        Players existing = playerList.get(id);
+        if(StringUtils.hasText(players.getName())){
+            existing.setName(players.getName());
+        }
+        if(StringUtils.hasText(players.getPosition())){
+            existing.setPosition(players.getPosition());
+        }
+        if(StringUtils.hasText(players.getFoot())){
+            existing.setFoot(players.getFoot());
+        }
+        if(StringUtils.hasText(players.getPlayStyle())){
+            existing.setPlayStyle(players.getPlayStyle());
+        }
+        if(players.getJerseyNo()!=null){
+            existing.setJerseyNo(players.getJerseyNo());
+        }
+
     }
 }

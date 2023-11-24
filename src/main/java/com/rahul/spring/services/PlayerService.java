@@ -11,5 +11,6 @@ public interface PlayerService {
     Players addPlayer(Players player);
     Boolean editPlayer(Players players);
     Boolean removePlayer(UUID id);
+    void patchPlayer(UUID id, Players players);
 
 }

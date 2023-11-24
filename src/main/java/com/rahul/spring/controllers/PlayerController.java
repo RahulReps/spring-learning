@@ -48,4 +48,10 @@ public class PlayerController {
         playerService.removePlayer(id);
         return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
     }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<Players> patchPlayer(@PathVariable UUID id, @RequestBody Players players){
+        playerService.patchPlayer(id,players);
+        return new ResponseEntity<Players>(HttpStatus.NO_CONTENT);
+    }
 }
