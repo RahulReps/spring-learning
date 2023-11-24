@@ -45,9 +45,7 @@ public class PlayerController {
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Players> deletePlayer(@PathVariable UUID id){
-        if(playerService.removePlayer(id)){
-            return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
-        }
-        return new ResponseEntity<Players>(HttpStatus.NOT_FOUND);
+        playerService.removePlayer(id);
+        return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
     }
 }

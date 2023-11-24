@@ -7,12 +7,16 @@ import com.rahul.spring.services.PlayerService;
 import com.rahul.spring.services.PlayerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
@@ -34,6 +38,21 @@ public class PlayerControllerTest {
     void setUp(){
         playerServiceImpl = new PlayerServiceImpl();
     }
+
+    @Test
+    void testDeletePlayer() throws Exception {
+        Players player = playerServiceImpl.getAllPlayers().get(0);
+
+        mockMvc.perform(delete("/players/delete/" + player.getId())
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted());
+
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+        verify(playerService).removePlayer(uuidArgumentCaptor.capture());
+
+        assertThat(player.getId()).isEqualTo(uuidArgumentCaptor.getValue());
+    }
+
     @Test
     void testUpdatePlayer() throws Exception{
         Players players = playerServiceImpl.getAllPlayers().get(0);
@@ -61,7 +80,7 @@ public class PlayerControllerTest {
     }
 
     @Test
-    void getPlayers() throws Exception{
+    void testGetPlayers() throws Exception{
         given(playerService.getAllPlayers()).willReturn(playerServiceImpl.getAllPlayers());
 
         mockMvc.perform(get("/players/players")
@@ -69,7 +88,7 @@ public class PlayerControllerTest {
                 .andExpect(jsonPath("$.length()", is(3)));
     }
     @Test
-    void getPlayerById() throws Exception{
+    void testGetPlayerById() throws Exception{
 
         Players players = playerServiceImpl.getAllPlayers().get(0);
 
