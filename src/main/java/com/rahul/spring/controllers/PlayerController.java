@@ -39,10 +39,8 @@ public class PlayerController {
 
     @PutMapping("/edit")
     public ResponseEntity<Players> edit(@RequestBody Players player){
-        if(playerService.editPlayer(player)){
-            return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
-        }
-        return new ResponseEntity<Players>(HttpStatus.NOT_FOUND);
+        playerService.editPlayer(player);
+        return new ResponseEntity<Players>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("delete/{id}")

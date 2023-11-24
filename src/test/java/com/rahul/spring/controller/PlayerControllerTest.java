@@ -1,6 +1,5 @@
 package com.rahul.spring.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rahul.spring.controllers.PlayerController;
 import com.rahul.spring.model.Players;
@@ -17,8 +16,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.core.Is.is;
 @WebMvcTest(PlayerController.class)
@@ -35,7 +34,18 @@ public class PlayerControllerTest {
     void setUp(){
         playerServiceImpl = new PlayerServiceImpl();
     }
+    @Test
+    void testUpdatePlayer() throws Exception{
+        Players players = playerServiceImpl.getAllPlayers().get(0);
 
+        mockMvc.perform(put("/players/edit")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(players)))
+                .andExpect(status().isCreated());
+
+        verify(playerService).editPlayer(any(Players.class));
+    }
     @Test
     void testCreatePlayer() throws Exception {
         Players players = playerServiceImpl.getAllPlayers().get(0);
