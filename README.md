@@ -40,5 +40,5 @@ Congratulations! You have just created a new Spring Boot application using Sprin
 
 ## Topics Covered
 
--CRUD operations
--Testing
+-CRUD operations.
+-Testing.
