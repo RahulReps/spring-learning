@@ -17,7 +17,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
-
+    public static final String APP_URI = "/players";
+    public static final String APP_URI_GET_ID = "/players/players/{id}";
     PlayerService playerService;
     @GetMapping("/players")
     public List<Players> getPlayers(){
@@ -30,26 +31,28 @@ public class PlayerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Players> addPlayers(@RequestBody Players player){
-        if(playerService.addPlayer(player)==null){
-            return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
+    public ResponseEntity addPlayers(@RequestBody Players player){
+        if(playerService.addPlayer(player)!=null){
+            return new ResponseEntity(HttpStatus.CREATED);
         }
-        return new ResponseEntity<Players>(HttpStatus.NOT_FOUND);
+        return new ResponseEntity(HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/edit")
     public ResponseEntity<Players> edit(@RequestBody Players player){
-        if(playerService.editPlayer(player)){
-            return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
-        }
-        return new ResponseEntity<Players>(HttpStatus.NOT_FOUND);
+        playerService.editPlayer(player);
+        return new ResponseEntity<Players>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Players> deletePlayer(@PathVariable UUID id){
-        if(playerService.removePlayer(id)){
-            return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
-        }
-        return new ResponseEntity<Players>(HttpStatus.NOT_FOUND);
+        playerService.removePlayer(id);
+        return new ResponseEntity<Players>(HttpStatus.ACCEPTED);
+    }
+
+    @PatchMapping("/patch/{id}")
+    public ResponseEntity<Players> patchPlayer(@PathVariable UUID id, @RequestBody Players players){
+        playerService.patchPlayer(id,players);
+        return new ResponseEntity<Players>(HttpStatus.NO_CONTENT);
     }
 }
