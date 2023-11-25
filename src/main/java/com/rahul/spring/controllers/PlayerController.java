@@ -17,7 +17,8 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/players")
 public class PlayerController {
-
+    public static final String APP_URI = "/players";
+    public static final String APP_URI_GET_ID = "/players/players/{id}";
     PlayerService playerService;
     @GetMapping("/players")
     public List<Players> getPlayers(){

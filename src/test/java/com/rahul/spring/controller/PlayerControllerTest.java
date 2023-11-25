@@ -120,7 +120,7 @@ public class PlayerControllerTest {
 
         given(playerService.getPlayerById(players.getId())).willReturn(players);
 
-        mockMvc.perform(get("/players/players/" + players.getId())
+        mockMvc.perform(get(PlayerController.APP_URI_GET_ID, players.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(players.getId().toString())));
