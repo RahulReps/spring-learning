@@ -55,9 +55,4 @@ public class PlayerController {
         playerService.patchPlayer(id,players);
         return new ResponseEntity<Players>(HttpStatus.NO_CONTENT);
     }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(){
-        return ResponseEntity.notFound().build();
-    }
 }
