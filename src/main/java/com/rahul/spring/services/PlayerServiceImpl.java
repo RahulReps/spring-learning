@@ -50,8 +50,8 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Players getPlayerById(UUID id) {
-        return playerList.get(id);
+    public Optional<Players> getPlayerById(UUID id) {
+        return Optional.of(playerList.get(id));
     }
 
     @Override

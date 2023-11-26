@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.as;
@@ -50,7 +51,7 @@ public class PlayerControllerTest {
 
     @Test
     void testNotFoundException() throws Exception{
-        given(playerService.getPlayerById(any(UUID.class))).willThrow(NotFoundException.class);
+        given(playerService.getPlayerById(any(UUID.class))).willReturn(Optional.empty());
 
         mockMvc.perform(get(PlayerController.APP_URI_GET_ID,UUID.randomUUID()))
                 .andExpect(status().isNotFound());
@@ -127,7 +128,7 @@ public class PlayerControllerTest {
 
         Players players = playerServiceImpl.getAllPlayers().get(0);
 
-        given(playerService.getPlayerById(players.getId())).willReturn(players);
+        given(playerService.getPlayerById(players.getId())).willReturn(Optional.of(players));
 
         mockMvc.perform(get(PlayerController.APP_URI_GET_ID, players.getId())
                 .accept(MediaType.APPLICATION_JSON))

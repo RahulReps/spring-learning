@@ -27,7 +27,7 @@ public class PlayerController {
 
     @GetMapping("/players/{id}")
     public Players getPlayerById(@PathVariable UUID id){
-        return playerService.getPlayerById(id);
+        return playerService.getPlayerById(id).orElseThrow(NotFoundException::new);
     }
 
     @PostMapping("/add")
