@@ -1,6 +1,7 @@
 package com.rahul.spring.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rahul.spring.controllers.NotFoundException;
 import com.rahul.spring.controllers.PlayerController;
 import com.rahul.spring.model.Players;
 import com.rahul.spring.services.PlayerService;
@@ -46,6 +47,14 @@ public class PlayerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
     @Captor
     ArgumentCaptor<Players> playersArgumentCaptor;
+
+    @Test
+    void testNotFoundException() throws Exception{
+        given(playerService.getPlayerById(any(UUID.class))).willThrow(NotFoundException.class);
+
+        mockMvc.perform(get(PlayerController.APP_URI_GET_ID,UUID.randomUUID()))
+                .andExpect(status().isNotFound());
+    }
 
     @Test
     void testPatchPlayer() throws Exception{
