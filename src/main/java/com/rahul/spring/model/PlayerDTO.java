@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.UUID;
 @Data
 @Builder
-public class Players {
+public class PlayerDTO {
     UUID id;
     String name;
     String position;
