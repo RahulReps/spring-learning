@@ -4,6 +4,7 @@ import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.services.PlayerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,10 +32,10 @@ public class PlayerController {
 
     @PostMapping("/add")
     public ResponseEntity addPlayers(@RequestBody PlayerDTO player){
-        if(playerService.addPlayer(player)!=null){
-            return new ResponseEntity(HttpStatus.CREATED);
-        }
-        return new ResponseEntity(HttpStatus.NOT_FOUND);
+        PlayerDTO playerDTO = playerService.addPlayer(player);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Location", APP_URI+"/"+playerDTO.getId().toString());
+        return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
     @PutMapping("/edit")

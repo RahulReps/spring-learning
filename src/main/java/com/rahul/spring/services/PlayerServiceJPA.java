@@ -30,7 +30,7 @@ public class PlayerServiceJPA implements PlayerService {
 
     @Override
     public PlayerDTO addPlayer(PlayerDTO player) {
-        return null;
+        return playerMapper.playerToPlayerDto(playerRepository.save(playerMapper.playerDtoToPlayer(player)));
     }
 
     @Override
