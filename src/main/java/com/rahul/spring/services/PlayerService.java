@@ -1,17 +1,17 @@
 package com.rahul.spring.services;
 
-import com.rahul.spring.model.Players;
+import com.rahul.spring.model.PlayerDTO;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface PlayerService {
-    List<Players> getAllPlayers();
-    Optional<Players> getPlayerById(UUID id);
-    Players addPlayer(Players player);
-    Boolean editPlayer(Players players);
+    List<PlayerDTO> getAllPlayers();
+    Optional<PlayerDTO> getPlayerById(UUID id);
+    PlayerDTO addPlayer(PlayerDTO player);
+    Optional<PlayerDTO> editPlayer(UUID id, PlayerDTO playerDTO);
     Boolean removePlayer(UUID id);
-    void patchPlayer(UUID id, Players players);
+    Boolean patchPlayer(UUID id, PlayerDTO playerDTO);
 
 }

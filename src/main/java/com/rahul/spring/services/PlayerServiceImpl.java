@@ -1,17 +1,17 @@
 package com.rahul.spring.services;
 
-import com.rahul.spring.model.Players;
+import com.rahul.spring.model.PlayerDTO;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
 @Service
 public class PlayerServiceImpl implements PlayerService {
-    private Map<UUID, Players> playerList;
+    private Map<UUID, PlayerDTO> playerList;
     public PlayerServiceImpl(){
         playerList = new HashMap<>();
 
-        Players player1 = Players.builder()
+        PlayerDTO player1 = PlayerDTO.builder()
                 .id(UUID.randomUUID())
                 .foot("left")
                 .name("Leonal Messi")
@@ -20,7 +20,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .playStyle("Playmaker")
                 .build();
 
-        Players player2 = Players.builder()
+        PlayerDTO player2 = PlayerDTO.builder()
                 .id(UUID.randomUUID())
                 .foot("right")
                 .name("Cristiano Ronaldo")
@@ -29,7 +29,7 @@ public class PlayerServiceImpl implements PlayerService {
                 .playStyle("Striker")
                 .build();
 
-        Players player3 = Players.builder()
+        PlayerDTO player3 = PlayerDTO.builder()
                 .id(UUID.randomUUID())
                 .foot("left")
                 .name("Haaland")
@@ -45,18 +45,18 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     @Override
-    public List<Players> getAllPlayers() {
+    public List<PlayerDTO> getAllPlayers() {
         return new ArrayList<>(playerList.values());
     }
 
     @Override
-    public Optional<Players> getPlayerById(UUID id) {
+    public Optional<PlayerDTO> getPlayerById(UUID id) {
         return Optional.of(playerList.get(id));
     }
 
     @Override
-    public Players addPlayer(Players player) {
-        Players savePlayer = Players.builder()
+    public PlayerDTO addPlayer(PlayerDTO player) {
+        PlayerDTO savePlayer = PlayerDTO.builder()
                 .id(UUID.randomUUID())
                 .foot(player.getFoot())
                 .name(player.getName())
@@ -69,17 +69,14 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Boolean editPlayer(Players players) {
-        if(playerList.containsKey(players.getId())){
-            Players existing = playerList.get(players.getId());
-            existing.setName(players.getName());
-            existing.setFoot(players.getFoot());
-            existing.setPosition(players.getPosition());
-            existing.setJerseyNo(players.getJerseyNo());
-            existing.setPlayStyle(players.getPlayStyle());
-            return true;
-        }
-        return false;
+    public Optional<PlayerDTO> editPlayer(UUID id, PlayerDTO playerDTO) {
+        PlayerDTO existing = playerList.get(id);
+        existing.setName(playerDTO.getName());
+        existing.setFoot(playerDTO.getFoot());
+        existing.setPosition(playerDTO.getPosition());
+        existing.setJerseyNo(playerDTO.getJerseyNo());
+        existing.setPlayStyle(playerDTO.getPlayStyle());
+        return Optional.of(existing);
     }
 
     @Override
@@ -92,23 +89,23 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void patchPlayer(UUID id, Players players) {
-        Players existing = playerList.get(id);
-        if(StringUtils.hasText(players.getName())){
-            existing.setName(players.getName());
+    public Boolean patchPlayer(UUID id, PlayerDTO playerDTO) {
+        PlayerDTO existing = playerList.get(id);
+        if(StringUtils.hasText(playerDTO.getName())){
+            existing.setName(playerDTO.getName());
         }
-        if(StringUtils.hasText(players.getPosition())){
-            existing.setPosition(players.getPosition());
+        if(StringUtils.hasText(playerDTO.getPosition())){
+            existing.setPosition(playerDTO.getPosition());
         }
-        if(StringUtils.hasText(players.getFoot())){
-            existing.setFoot(players.getFoot());
+        if(StringUtils.hasText(playerDTO.getFoot())){
+            existing.setFoot(playerDTO.getFoot());
         }
-        if(StringUtils.hasText(players.getPlayStyle())){
-            existing.setPlayStyle(players.getPlayStyle());
+        if(StringUtils.hasText(playerDTO.getPlayStyle())){
+            existing.setPlayStyle(playerDTO.getPlayStyle());
         }
-        if(players.getJerseyNo()!=null){
-            existing.setJerseyNo(players.getJerseyNo());
+        if(playerDTO.getJerseyNo() != null){
+            existing.setJerseyNo(playerDTO.getJerseyNo());
         }
-
+        return true;
     }
 }
