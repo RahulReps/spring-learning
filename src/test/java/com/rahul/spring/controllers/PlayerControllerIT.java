@@ -1,6 +1,7 @@
 package com.rahul.spring.controllers;
 
 import com.rahul.spring.entities.Player;
+import com.rahul.spring.mappers.PlayerMapper;
 import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.repositories.PlayerRepository;
 import jakarta.transaction.Transactional;
@@ -21,6 +22,65 @@ class PlayerControllerIT {
     PlayerController playerController;
     @Autowired
     PlayerRepository playerRepository;
+    @Autowired
+    PlayerMapper playerMapper;
+
+    @Test
+    void testInvalidPatchPlayer(){
+        assertThrows(NotFoundException.class, () ->{
+            playerController.patchPlayer(UUID.randomUUID(), PlayerDTO.builder().build());
+        });
+    }
+    @Rollback
+    @Transactional
+    @Test
+    void testPatchPlayer(){
+        Player player = playerRepository.findAll().get(0);
+        PlayerDTO playerDTO = playerMapper.playerToPlayerDto(player);
+        playerDTO.setName("Updated Name");
+        playerDTO.setId(null);
+
+        ResponseEntity responseEntity = playerController.patchPlayer(player.getId(), playerDTO);
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(204);
+
+        Player updated = playerRepository.findById(player.getId()).get();
+        assertThat(updated.getName()).isEqualTo("Updated Name");
+    }
+    @Test
+    void testInvalidDeletePlayer(){
+        assertThrows(NotFoundException.class, () ->{
+            playerController.deletePlayer(UUID.randomUUID());
+        });
+    }
+    @Rollback
+    @Transactional
+    @Test
+    void testDeletePlayer(){
+        Player player = playerRepository.findAll().get(0);
+        playerController.deletePlayer(player.getId());
+        assertThat(playerRepository.findById(player.getId())).isEmpty();
+    }
+    @Test
+    void testInvalidUpdatePlayer(){
+        assertThrows(NotFoundException.class, () ->{
+            playerController.edit(UUID.randomUUID(), PlayerDTO.builder().build());
+        });
+    }
+    @Transactional
+    @Rollback
+    @Test
+    void testUpdatePlayer() {
+        Player player = playerRepository.findAll().get(0);
+        PlayerDTO playerDTO = playerMapper.playerToPlayerDto(player);
+        playerDTO.setName("Updated Name");
+        playerDTO.setId(null);
+
+        ResponseEntity responseEntity = playerController.edit(player.getId(), playerDTO);
+        assertThat(responseEntity.getStatusCodeValue()).isEqualTo(201);
+
+        Player updated = playerRepository.findById(player.getId()).get();
+        assertThat(updated.getName()).isEqualTo("Updated Name");
+    }
 
     @Rollback
     @Transactional

@@ -69,17 +69,14 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public Boolean editPlayer(PlayerDTO playerDTO) {
-        if(playerList.containsKey(playerDTO.getId())){
-            PlayerDTO existing = playerList.get(playerDTO.getId());
-            existing.setName(playerDTO.getName());
-            existing.setFoot(playerDTO.getFoot());
-            existing.setPosition(playerDTO.getPosition());
-            existing.setJerseyNo(playerDTO.getJerseyNo());
-            existing.setPlayStyle(playerDTO.getPlayStyle());
-            return true;
-        }
-        return false;
+    public Optional<PlayerDTO> editPlayer(UUID id, PlayerDTO playerDTO) {
+        PlayerDTO existing = playerList.get(id);
+        existing.setName(playerDTO.getName());
+        existing.setFoot(playerDTO.getFoot());
+        existing.setPosition(playerDTO.getPosition());
+        existing.setJerseyNo(playerDTO.getJerseyNo());
+        existing.setPlayStyle(playerDTO.getPlayStyle());
+        return Optional.of(existing);
     }
 
     @Override
@@ -92,7 +89,7 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void patchPlayer(UUID id, PlayerDTO playerDTO) {
+    public Boolean patchPlayer(UUID id, PlayerDTO playerDTO) {
         PlayerDTO existing = playerList.get(id);
         if(StringUtils.hasText(playerDTO.getName())){
             existing.setName(playerDTO.getName());
@@ -109,6 +106,6 @@ public class PlayerServiceImpl implements PlayerService {
         if(playerDTO.getJerseyNo() != null){
             existing.setJerseyNo(playerDTO.getJerseyNo());
         }
-
+        return true;
     }
 }

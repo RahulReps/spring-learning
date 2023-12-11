@@ -38,21 +38,27 @@ public class PlayerController {
         return new ResponseEntity(headers, HttpStatus.CREATED);
     }
 
-    @PutMapping("/edit")
-    public ResponseEntity<PlayerDTO> edit(@RequestBody PlayerDTO player){
-        playerService.editPlayer(player);
+    @PutMapping("/edit/{id}")
+    public ResponseEntity<PlayerDTO> edit(@PathVariable UUID id, @RequestBody PlayerDTO player){
+        if(playerService.editPlayer(id,player).isEmpty()){
+            throw new NotFoundException();
+        }
         return new ResponseEntity<PlayerDTO>(HttpStatus.CREATED);
     }
 
     @DeleteMapping("delete/{id}")
     public ResponseEntity<PlayerDTO> deletePlayer(@PathVariable UUID id){
-        playerService.removePlayer(id);
+        if(!playerService.removePlayer(id)){
+            throw new NotFoundException();
+        }
         return new ResponseEntity<PlayerDTO>(HttpStatus.ACCEPTED);
     }
 
     @PatchMapping("/patch/{id}")
     public ResponseEntity<PlayerDTO> patchPlayer(@PathVariable UUID id, @RequestBody PlayerDTO playerDTO){
-        playerService.patchPlayer(id, playerDTO);
+        if(!playerService.patchPlayer(id, playerDTO)){
+            throw new NotFoundException();
+        }
         return new ResponseEntity<PlayerDTO>(HttpStatus.NO_CONTENT);
     }
 }

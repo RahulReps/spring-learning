@@ -10,8 +10,8 @@ public interface PlayerService {
     List<PlayerDTO> getAllPlayers();
     Optional<PlayerDTO> getPlayerById(UUID id);
     PlayerDTO addPlayer(PlayerDTO player);
-    Boolean editPlayer(PlayerDTO playerDTO);
+    Optional<PlayerDTO> editPlayer(UUID id, PlayerDTO playerDTO);
     Boolean removePlayer(UUID id);
-    void patchPlayer(UUID id, PlayerDTO playerDTO);
+    Boolean patchPlayer(UUID id, PlayerDTO playerDTO);
 
 }

@@ -58,7 +58,7 @@ public class PlayerControllerTest {
     @Test
     void testPatchPlayer() throws Exception{
         PlayerDTO playerDTO = playerServiceImpl.getAllPlayers().get(0);
-
+        given(playerService.patchPlayer(any(),any())).willReturn(true);
         Map<String, Object> playerMap = new HashMap<>();
         playerMap.put("name","Penaldo");
 
@@ -77,7 +77,7 @@ public class PlayerControllerTest {
     @Test
     void testDeletePlayer() throws Exception {
         PlayerDTO player = playerServiceImpl.getAllPlayers().get(0);
-
+        given(playerService.removePlayer(any())).willReturn(true);
         mockMvc.perform(delete("/players/delete/" + player.getId())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted());
@@ -90,14 +90,14 @@ public class PlayerControllerTest {
     @Test
     void testUpdatePlayer() throws Exception{
         PlayerDTO playerDTO = playerServiceImpl.getAllPlayers().get(0);
-
-        mockMvc.perform(put("/players/edit")
+        given(playerService.editPlayer(any(), any())).willReturn(Optional.of(playerDTO));
+        mockMvc.perform(put("/players/edit/"+playerDTO.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(playerDTO)))
                 .andExpect(status().isCreated());
 
-        verify(playerService).editPlayer(any(PlayerDTO.class));
+        verify(playerService).editPlayer(any(UUID.class),any(PlayerDTO.class));
     }
     @Test
     void testCreatePlayer() throws Exception {
