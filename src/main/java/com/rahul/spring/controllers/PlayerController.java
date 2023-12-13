@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,7 +32,7 @@ public class PlayerController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity addPlayers(@RequestBody PlayerDTO player){
+    public ResponseEntity addPlayers(@Validated @RequestBody PlayerDTO player){
         PlayerDTO playerDTO = playerService.addPlayer(player);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Location", APP_URI+"/"+playerDTO.getId().toString());
