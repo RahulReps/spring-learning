@@ -13,8 +13,13 @@ public class PlayerDTO {
     @NotBlank
     @NotNull
     String name;
+    @NotNull
+    @NotBlank
     String position;
+    @NotNull
     Integer jerseyNo;
+    @NotNull
+    @NotBlank
     String foot;
     String playStyle;
 }
