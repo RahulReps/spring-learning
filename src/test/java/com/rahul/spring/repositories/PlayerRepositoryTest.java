@@ -15,8 +15,13 @@ class PlayerRepositoryTest {
     void testSavePlayer(){
         Player player = playerRepository.save(Player.builder()
                     .name("Rahul")
+                        .foot("Right")
+                        .jerseyNo(17)
+                        .playStyle("Hole player")
+                        .position("AMF")
                     .build());
 
+        playerRepository.flush();
         assertThat(player.getId()).isNotNull();
     }
 }
