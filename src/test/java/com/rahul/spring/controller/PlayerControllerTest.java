@@ -1,5 +1,6 @@
 package com.rahul.spring.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rahul.spring.controllers.PlayerController;
 import com.rahul.spring.model.PlayerDTO;
@@ -47,6 +48,20 @@ public class PlayerControllerTest {
     @Captor
     ArgumentCaptor<PlayerDTO> playersArgumentCaptor;
 
+    @Test
+    void testCreatePlayerNullName() throws Exception {
+
+        PlayerDTO playerDTO = PlayerDTO.builder().build();
+
+        given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers().get(1));
+
+        mockMvc.perform(post("/players/add")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(playerDTO)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.length()", is(7)));
+    }
     @Test
     void testNotFoundException() throws Exception{
         given(playerService.getPlayerById(any(UUID.class))).willReturn(Optional.empty());
