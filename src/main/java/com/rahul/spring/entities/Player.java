@@ -32,6 +32,8 @@ public class Player {
     @Size(max=50)
     @Column(length=50)
     String name;
+    @Column(length=255)
+    String club;
     @NotNull
     @NotBlank
     String position;
