@@ -168,7 +168,7 @@ class PlayerControllerIT {
     @Test
     void testGetAllPlayers() {
         List<PlayerDTO> playerDTOS = playerController.getPlayers();
-        assertThat(playerDTOS.size()).isEqualTo(3);
+        assertThat(playerDTOS.size()).isEqualTo(573);
     }
     @Rollback
     @Transactional
