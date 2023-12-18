@@ -45,7 +45,7 @@ public class PlayerServiceImpl implements PlayerService {
 
 
     @Override
-    public List<PlayerDTO> getAllPlayers() {
+    public List<PlayerDTO> getAllPlayers(String playerName, String playStyle) {
         return new ArrayList<>(playerList.values());
     }
 

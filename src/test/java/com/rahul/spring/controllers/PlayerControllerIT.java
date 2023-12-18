@@ -31,6 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -57,6 +58,21 @@ class PlayerControllerIT {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    @Test
+    void testGetPlayersByPlayStyle() throws Exception {
+        mockMvc.perform(get(PlayerController.GET_URI)
+                            .queryParam("playStyle", "Anc"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(17)));
+    }
+
+    @Test
+    void testGetPlayersByName() throws Exception {
+        mockMvc.perform(get(PlayerController.GET_URI)
+                .queryParam("playerName", "Kev"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(4)));
+    }
     @Test
     void testInvalidPatchPlayerName() throws Exception{
         Player player = playerRepository.findAll().get(0);
@@ -167,7 +183,7 @@ class PlayerControllerIT {
 
     @Test
     void testGetAllPlayers() {
-        List<PlayerDTO> playerDTOS = playerController.getPlayers();
+        List<PlayerDTO> playerDTOS = playerController.getPlayers(null, null);
         assertThat(playerDTOS.size()).isEqualTo(573);
     }
     @Rollback
@@ -175,7 +191,7 @@ class PlayerControllerIT {
     @Test
     void testEmptyPlayerList() {
         playerRepository.deleteAll();
-        List<PlayerDTO> playerDTOS = playerController.getPlayers();
+        List<PlayerDTO> playerDTOS = playerController.getPlayers(null, null);
         assertThat(playerDTOS.size()).isEqualTo(0);
     }
 }

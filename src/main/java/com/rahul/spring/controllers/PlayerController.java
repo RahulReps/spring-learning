@@ -19,11 +19,12 @@ import java.util.UUID;
 @RequestMapping("/players")
 public class PlayerController {
     public static final String APP_URI = "/players";
+    public static final String GET_URI = "/players/players";
     public static final String APP_URI_GET_ID = "/players/players/{id}";
     PlayerService playerService;
     @GetMapping("/players")
-    public List<PlayerDTO> getPlayers(){
-        return playerService.getAllPlayers();
+    public List<PlayerDTO> getPlayers(@RequestParam(required = false) String playerName, @RequestParam(required = false) String playStyle){
+        return playerService.getAllPlayers(playerName, playStyle);
     }
 
     @GetMapping("/players/{id}")
