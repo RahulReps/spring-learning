@@ -10,4 +10,6 @@ public interface PlayerRepository extends JpaRepository<Player, UUID> {
     List<Player> findAllByNameIsLikeIgnoreCase(String playerName);
 
     List<Player> findAllByPlayStyleIsLikeIgnoreCase(String playStyle);
+
+    List<Player> findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase(String playerName, String playerStyle);
 }

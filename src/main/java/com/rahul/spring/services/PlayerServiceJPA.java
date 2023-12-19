@@ -30,10 +30,17 @@ public class PlayerServiceJPA implements PlayerService {
         else if(StringUtils.hasText(playStyle) && playerName==null){
             playerList = getPlayersByPlayStyle(playStyle);
         }
+        else if(StringUtils.hasText(playStyle) && StringUtils.hasText(playerName)){
+            playerList = getPlayersByNameAndPlayStyle(playerName, playStyle);
+        }
         else{
             playerList = playerRepository.findAll();
         }
         return playerList.stream().map(playerMapper::playerToPlayerDto).collect(Collectors.toList());
+    }
+
+    private List<Player> getPlayersByNameAndPlayStyle(String playerName, String playStyle) {
+        return playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%" + playerName + "%", "%" + playStyle + "%");
     }
 
     public List<Player> getPlayersByPlayStyle(String playStyle){

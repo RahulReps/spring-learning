@@ -59,6 +59,14 @@ class PlayerControllerIT {
     }
 
     @Test
+    void testGetPlayersByPlayerNameAndPlayStyle() throws Exception {
+        mockMvc.perform(get(PlayerController.GET_URI)
+                        .queryParam("playStyle", "Anc")
+                        .queryParam("playerName", "KEV"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(1)));
+    }
+    @Test
     void testGetPlayersByPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
                             .queryParam("playStyle", "Anc"))

@@ -20,6 +20,12 @@ class PlayerRepositoryTest {
     PlayerRepository playerRepository;
 
     @Test
+    void testPlayersByNameAndPlayStyle(){
+        List<Player> list = playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%KEV%", "%Anc%");
+
+        assertThat(list.size()).isEqualTo(1);
+    }
+    @Test
     void testPlayersByName(){
         List<Player> list = playerRepository.findAllByNameIsLikeIgnoreCase("%KEV%");
 
