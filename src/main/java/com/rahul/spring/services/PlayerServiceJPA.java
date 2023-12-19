@@ -1,11 +1,13 @@
 package com.rahul.spring.services;
 
+import com.rahul.spring.entities.Player;
 import com.rahul.spring.mappers.PlayerMapper;
 import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.repositories.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +22,33 @@ public class PlayerServiceJPA implements PlayerService {
     private final PlayerRepository playerRepository;
     private final PlayerMapper playerMapper;
     @Override
-    public List<PlayerDTO> getAllPlayers() {
-        return playerRepository.findAll().stream().map(playerMapper::playerToPlayerDto).collect(Collectors.toList());
+    public List<PlayerDTO> getAllPlayers(String playerName, String playStyle) {
+        List<Player> playerList;
+        if (StringUtils.hasText(playerName) && playStyle==null){
+            playerList = getPlayersByName(playerName);
+        }
+        else if(StringUtils.hasText(playStyle) && playerName==null){
+            playerList = getPlayersByPlayStyle(playStyle);
+        }
+        else if(StringUtils.hasText(playStyle) && StringUtils.hasText(playerName)){
+            playerList = getPlayersByNameAndPlayStyle(playerName, playStyle);
+        }
+        else{
+            playerList = playerRepository.findAll();
+        }
+        return playerList.stream().map(playerMapper::playerToPlayerDto).collect(Collectors.toList());
+    }
+
+    private List<Player> getPlayersByNameAndPlayStyle(String playerName, String playStyle) {
+        return playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%" + playerName + "%", "%" + playStyle + "%");
+    }
+
+    public List<Player> getPlayersByPlayStyle(String playStyle){
+        return playerRepository.findAllByPlayStyleIsLikeIgnoreCase("%" + playStyle + "%");
+    }
+
+    public List<Player> getPlayersByName(String playerName){
+        return playerRepository.findAllByNameIsLikeIgnoreCase("%" + playerName + "%");
     }
 
     @Override

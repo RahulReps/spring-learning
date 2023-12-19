@@ -7,7 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface PlayerService {
-    List<PlayerDTO> getAllPlayers();
+    List<PlayerDTO> getAllPlayers(String playerName, String playStyle);
     Optional<PlayerDTO> getPlayerById(UUID id);
     PlayerDTO addPlayer(PlayerDTO player);
     Optional<PlayerDTO> editPlayer(UUID id, PlayerDTO playerDTO);

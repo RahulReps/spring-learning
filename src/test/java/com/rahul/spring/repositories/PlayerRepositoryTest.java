@@ -1,18 +1,43 @@
 package com.rahul.spring.repositories;
 
+import com.rahul.spring.bootstrap.BootstrapData;
 import com.rahul.spring.entities.Player;
+import com.rahul.spring.services.PlayerCsvServiceImpl;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 @DataJpaTest
+@Import({BootstrapData.class, PlayerCsvServiceImpl.class})
 class PlayerRepositoryTest {
     @Autowired
     PlayerRepository playerRepository;
 
+    @Test
+    void testPlayersByNameAndPlayStyle(){
+        List<Player> list = playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%KEV%", "%Anc%");
+
+        assertThat(list.size()).isEqualTo(1);
+    }
+    @Test
+    void testPlayersByName(){
+        List<Player> list = playerRepository.findAllByNameIsLikeIgnoreCase("%KEV%");
+
+        assertThat(list.size()).isEqualTo(4);
+    }
+
+    @Test
+    void testPlayersByPlayStyle(){
+        List<Player> list = playerRepository.findAllByPlayStyleIsLikeIgnoreCase("%Anc%");
+
+        assertThat(list.size()).isEqualTo(17);
+    }
     @Test
     void testNameTooLong(){
         assertThrows(ConstraintViolationException.class, () ->{
