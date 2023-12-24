@@ -4,13 +4,13 @@ import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.services.PlayerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -23,8 +23,11 @@ public class PlayerController {
     public static final String APP_URI_GET_ID = "/players/players/{id}";
     PlayerService playerService;
     @GetMapping("/players")
-    public List<PlayerDTO> getPlayers(@RequestParam(required = false) String playerName, @RequestParam(required = false) String playStyle){
-        return playerService.getAllPlayers(playerName, playStyle);
+    public Page<PlayerDTO> getPlayers(@RequestParam(required = false) String playerName,
+                                      @RequestParam(required = false) String playStyle,
+                                      @RequestParam(required = false) Integer pageNumber,
+                                      @RequestParam(required = false) Integer pageSize){
+        return playerService.getAllPlayers(playerName, playStyle, pageNumber, pageSize);
     }
 
     @GetMapping("/players/{id}")

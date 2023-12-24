@@ -8,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
 
@@ -21,22 +23,22 @@ class PlayerRepositoryTest {
 
     @Test
     void testPlayersByNameAndPlayStyle(){
-        List<Player> list = playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%KEV%", "%Anc%");
+        Page<Player> list = playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%KEV%", "%Anc%", null);
 
-        assertThat(list.size()).isEqualTo(1);
+        assertThat(list.getContent().size()).isEqualTo(1);
     }
     @Test
     void testPlayersByName(){
-        List<Player> list = playerRepository.findAllByNameIsLikeIgnoreCase("%KEV%");
+        Page<Player> list = playerRepository.findAllByNameIsLikeIgnoreCase("%KEV%", null);
 
-        assertThat(list.size()).isEqualTo(4);
+        assertThat(list.getContent().size()).isEqualTo(4);
     }
 
     @Test
     void testPlayersByPlayStyle(){
-        List<Player> list = playerRepository.findAllByPlayStyleIsLikeIgnoreCase("%Anc%");
+        Page<Player> list = playerRepository.findAllByPlayStyleIsLikeIgnoreCase("%Anc%", PageRequest.of(0,10));
 
-        assertThat(list.size()).isEqualTo(17);
+        assertThat(list.getContent().size()).isEqualTo(10);
     }
     @Test
     void testNameTooLong(){

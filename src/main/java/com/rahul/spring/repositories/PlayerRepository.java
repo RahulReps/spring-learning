@@ -1,15 +1,16 @@
 package com.rahul.spring.repositories;
 
 import com.rahul.spring.entities.Player;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface PlayerRepository extends JpaRepository<Player, UUID> {
-    List<Player> findAllByNameIsLikeIgnoreCase(String playerName);
+    Page<Player> findAllByNameIsLikeIgnoreCase(String playerName, Pageable pageable);
 
-    List<Player> findAllByPlayStyleIsLikeIgnoreCase(String playStyle);
+    Page<Player> findAllByPlayStyleIsLikeIgnoreCase(String playStyle, Pageable pageable);
 
-    List<Player> findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase(String playerName, String playerStyle);
+    Page<Player> findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase(String playerName, String playerStyle, Pageable pageable);
 }

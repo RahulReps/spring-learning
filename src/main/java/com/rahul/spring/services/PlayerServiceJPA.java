@@ -6,6 +6,9 @@ import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.repositories.PlayerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -21,34 +24,61 @@ import java.util.stream.Collectors;
 public class PlayerServiceJPA implements PlayerService {
     private final PlayerRepository playerRepository;
     private final PlayerMapper playerMapper;
+
+    public static final int DEFAULT_PAGE = 0;
+    public static final int DEFAULT_PAGE_SIZE = 10;
+
     @Override
-    public List<PlayerDTO> getAllPlayers(String playerName, String playStyle) {
-        List<Player> playerList;
+    public Page<PlayerDTO> getAllPlayers(String playerName, String playStyle, Integer pageNumber, Integer pageSize) {
+        Page<Player> playerList;
+        PageRequest pageRequest = this.pageRequestBuilder(pageNumber, pageSize);
+
         if (StringUtils.hasText(playerName) && playStyle==null){
-            playerList = getPlayersByName(playerName);
+            playerList = getPlayersByName(playerName, pageRequest);
         }
         else if(StringUtils.hasText(playStyle) && playerName==null){
-            playerList = getPlayersByPlayStyle(playStyle);
+            playerList = getPlayersByPlayStyle(playStyle, pageRequest);
         }
         else if(StringUtils.hasText(playStyle) && StringUtils.hasText(playerName)){
-            playerList = getPlayersByNameAndPlayStyle(playerName, playStyle);
+            playerList = getPlayersByNameAndPlayStyle(playerName, playStyle, pageRequest);
         }
         else{
-            playerList = playerRepository.findAll();
+            playerList = playerRepository.findAll(pageRequest);
         }
-        return playerList.stream().map(playerMapper::playerToPlayerDto).collect(Collectors.toList());
+        return playerList.map(playerMapper::playerToPlayerDto);
     }
 
-    private List<Player> getPlayersByNameAndPlayStyle(String playerName, String playStyle) {
-        return playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%" + playerName + "%", "%" + playStyle + "%");
+    public PageRequest pageRequestBuilder(Integer pageNumber, Integer pageSize){
+        int queryPageNumber = DEFAULT_PAGE;
+        int queryPageSize = DEFAULT_PAGE_SIZE;
+
+        if(pageNumber != null && pageNumber > 0){
+            queryPageNumber = pageNumber-1;
+        }
+
+        if(pageSize != null){
+            if(pageSize > 100){
+                queryPageSize = 100;
+            }
+            else{
+                queryPageSize = pageSize;
+            }
+        }
+
+        Sort sort = Sort.by(Sort.Order.asc("club"));
+        return PageRequest.of(queryPageNumber, queryPageSize, sort);
     }
 
-    public List<Player> getPlayersByPlayStyle(String playStyle){
-        return playerRepository.findAllByPlayStyleIsLikeIgnoreCase("%" + playStyle + "%");
+    private Page<Player> getPlayersByNameAndPlayStyle(String playerName, String playStyle, PageRequest pageRequest) {
+        return playerRepository.findAllByNameIsLikeIgnoreCaseAndPlayStyleIsLikeIgnoreCase("%" + playerName + "%", "%" + playStyle + "%", pageRequest);
     }
 
-    public List<Player> getPlayersByName(String playerName){
-        return playerRepository.findAllByNameIsLikeIgnoreCase("%" + playerName + "%");
+    public Page<Player> getPlayersByPlayStyle(String playStyle, PageRequest pageRequest){
+        return playerRepository.findAllByPlayStyleIsLikeIgnoreCase("%" + playStyle + "%", pageRequest);
+    }
+
+    public Page<Player> getPlayersByName(String playerName, PageRequest pageRequest){
+        return playerRepository.findAllByNameIsLikeIgnoreCase("%" + playerName + "%", pageRequest);
     }
 
     @Override
