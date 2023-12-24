@@ -10,12 +10,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MockMvcBuilder;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -29,7 +28,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -59,19 +57,29 @@ class PlayerControllerIT {
     }
 
     @Test
+    void testGetPlayersByPlayerNameAndPlayStyle2() throws Exception {
+        mockMvc.perform(get(PlayerController.GET_URI)
+                        .queryParam("playStyle", "Anc")
+                        .queryParam("pageNumber", "1")
+                        .queryParam("pageSize","5"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.size()", is(5)));
+    }
+
+    @Test
     void testGetPlayersByPlayerNameAndPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
                         .queryParam("playStyle", "Anc")
                         .queryParam("playerName", "KEV"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(1)));
+                .andExpect(jsonPath("$.content.size()", is(1)));
     }
     @Test
     void testGetPlayersByPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
                             .queryParam("playStyle", "Anc"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(17)));
+                .andExpect(jsonPath("$.content.size()", is(10)));
     }
 
     @Test
@@ -79,7 +87,7 @@ class PlayerControllerIT {
         mockMvc.perform(get(PlayerController.GET_URI)
                 .queryParam("playerName", "Kev"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(4)));
+                .andExpect(jsonPath("$.content.size()", is(4)));
     }
     @Test
     void testInvalidPatchPlayerName() throws Exception{
@@ -191,15 +199,15 @@ class PlayerControllerIT {
 
     @Test
     void testGetAllPlayers() {
-        List<PlayerDTO> playerDTOS = playerController.getPlayers(null, null);
-        assertThat(playerDTOS.size()).isEqualTo(573);
+        Page<PlayerDTO> playerDTOS = playerController.getPlayers(null, null, 1, 1000);
+        assertThat(playerDTOS.getContent().size()).isEqualTo(100);
     }
     @Rollback
     @Transactional
     @Test
     void testEmptyPlayerList() {
         playerRepository.deleteAll();
-        List<PlayerDTO> playerDTOS = playerController.getPlayers(null, null);
-        assertThat(playerDTOS.size()).isEqualTo(0);
+        Page<PlayerDTO> playerDTOS = playerController.getPlayers(null, null, 1, 10);
+        assertThat(playerDTOS.getContent().size()).isEqualTo(0);
     }
 }

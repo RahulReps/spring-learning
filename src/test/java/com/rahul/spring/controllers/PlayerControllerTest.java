@@ -51,7 +51,7 @@ public class PlayerControllerTest {
 
         PlayerDTO playerDTO = PlayerDTO.builder().build();
 
-        given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers(null, null).get(1));
+        given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(1));
 
         mockMvc.perform(post("/players/add")
                 .accept(MediaType.APPLICATION_JSON)
@@ -70,7 +70,7 @@ public class PlayerControllerTest {
 
     @Test
     void testPatchPlayer() throws Exception{
-        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null).get(0);
+        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
         given(playerService.patchPlayer(any(),any())).willReturn(true);
         Map<String, Object> playerMap = new HashMap<>();
         playerMap.put("name","Penaldo");
@@ -89,7 +89,7 @@ public class PlayerControllerTest {
 
     @Test
     void testDeletePlayer() throws Exception {
-        PlayerDTO player = playerServiceImpl.getAllPlayers(null, null).get(0);
+        PlayerDTO player = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
         given(playerService.removePlayer(any())).willReturn(true);
         mockMvc.perform(delete("/players/delete/" + player.getId())
                 .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +102,7 @@ public class PlayerControllerTest {
 
     @Test
     void testUpdatePlayer() throws Exception{
-        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null).get(0);
+        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
         given(playerService.editPlayer(any(), any())).willReturn(Optional.of(playerDTO));
         mockMvc.perform(put("/players/edit/"+playerDTO.getId())
                 .accept(MediaType.APPLICATION_JSON)
@@ -114,10 +114,10 @@ public class PlayerControllerTest {
     }
     @Test
     void testCreatePlayer() throws Exception {
-        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null).get(0);
+        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
         playerDTO.setId(null);
 
-        given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers(null, null).get(1));
+        given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(1));
 
         mockMvc.perform(post("/players/add")
                 .accept(MediaType.APPLICATION_JSON)
@@ -128,16 +128,16 @@ public class PlayerControllerTest {
 
     @Test
     void testGetPlayers() throws Exception{
-        given(playerService.getAllPlayers(null, null)).willReturn(playerServiceImpl.getAllPlayers(null, null));
+        given(playerService.getAllPlayers(any(), any(), any(), any())).willReturn(playerServiceImpl.getAllPlayers(null, null, 1, 10));
 
         mockMvc.perform(get("/players/players")
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(3)));
+                .andExpect(jsonPath("$.length()", is(11)));
     }
     @Test
     void testGetPlayerById() throws Exception{
 
-        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null).get(0);
+        PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
 
         given(playerService.getPlayerById(playerDTO.getId())).willReturn(Optional.of(playerDTO));
 
