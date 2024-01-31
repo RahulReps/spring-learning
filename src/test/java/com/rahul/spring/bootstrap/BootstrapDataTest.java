@@ -1,6 +1,7 @@
 package com.rahul.spring.bootstrap;
 
 import com.rahul.spring.repositories.PlayerRepository;
+import com.rahul.spring.repositories.AccountRepository;
 import com.rahul.spring.services.PlayerCsvService;
 import com.rahul.spring.services.PlayerCsvServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,7 +11,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+
 @DataJpaTest
 @Import(PlayerCsvServiceImpl.class)
 class BootstrapDataTest {
@@ -18,13 +19,15 @@ class BootstrapDataTest {
     PlayerRepository playerRepository;
 
     @Autowired
+    AccountRepository accountRepository;
+    @Autowired
     PlayerCsvService playerCsvService;
 
     BootstrapData bootstrapData;
 
     @BeforeEach
     void setUp(){
-        bootstrapData = new BootstrapData(playerRepository, playerCsvService);
+        bootstrapData = new BootstrapData(playerRepository, playerCsvService, accountRepository);
     }
     @Test
     void testRun() throws Exception {

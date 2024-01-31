@@ -1,12 +1,12 @@
 package com.rahul.spring.bootstrap;
 
 import com.rahul.spring.entities.Player;
+import com.rahul.spring.entities.Account;
 import com.rahul.spring.model.PlayerCSVRecord;
-import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.repositories.PlayerRepository;
+import com.rahul.spring.repositories.AccountRepository;
 import com.rahul.spring.services.PlayerCsvService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
@@ -21,10 +21,13 @@ public class BootstrapData implements CommandLineRunner {
     private final PlayerRepository playerRepository;
     private final PlayerCsvService playerCsvService;
     private final List<String> PLAYSTYLES = Arrays.asList("Goal Poacher", "Prolific Winger", "Roaming Flank", "Hole Player", "Playmaker", "Anchor Man", "Build Up", "Destroyer");
+    private final AccountRepository accountRepository;
+
     @Override
     public void run(String... args) throws Exception {
         loadData();
         loadCsvData();
+        loadAccountDetails();
     }
 
     private void loadCsvData() throws FileNotFoundException {
@@ -41,6 +44,30 @@ public class BootstrapData implements CommandLineRunner {
                                 .playStyle(playerCSVRecord.getPlaystyle())
                         .build());
             });
+        }
+    }
+
+    public void loadAccountDetails(){
+        if(accountRepository.count() == 0){
+            Account account1 = Account.builder()
+                    .id(UUID.randomUUID())
+                    .name("Account 1")
+                    .email("mail1@gmail.com")
+                    .build();
+
+            Account account2 = Account.builder()
+                    .id(UUID.randomUUID())
+                    .name("Account 2")
+                    .email("mail2@gmail.com")
+                    .build();
+
+            Account account3 = Account.builder()
+                    .id(UUID.randomUUID())
+                    .name("Account 3")
+                    .email("mail3@gmail.com")
+                    .build();
+
+            accountRepository.saveAll(Arrays.asList(account1, account2, account3));
         }
     }
 
