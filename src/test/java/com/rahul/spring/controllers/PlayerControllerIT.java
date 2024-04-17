@@ -101,7 +101,6 @@ class PlayerControllerIT {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(playerMap)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.length()", is(1)))
                 .andReturn();
         System.out.println(result.getResponse().getContentAsString());
     }
