@@ -1,14 +1,13 @@
 package com.rahul.spring.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 @Getter
 @Setter
@@ -27,4 +26,8 @@ public class Account {
 
     @Column(length = 255)
     private String email;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    private Set<PlayerOrder> playerOrders = new HashSet<>();
 }
