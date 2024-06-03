@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -29,6 +30,8 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -53,12 +56,21 @@ class PlayerControllerIT {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(springSecurity()).build();
+    }
+
+    @Test
+    void testNoAuth() throws Exception {
+            mockMvc.perform(get(PlayerController.GET_URI)
+                            .queryParam("playerName", "Kev"))
+                    .andExpect(status().isUnauthorized());
     }
 
     @Test
     void testGetPlayersByPlayerNameAndPlayStyle2() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
+                        .with(httpBasic("user1", "password"))
                         .queryParam("playStyle", "Anc")
                         .queryParam("pageNumber", "1")
                         .queryParam("pageSize","5"))
@@ -69,6 +81,7 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByPlayerNameAndPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
+                        .with(httpBasic("user1", "password"))
                         .queryParam("playStyle", "Anc")
                         .queryParam("playerName", "KEV"))
                 .andExpect(status().isOk())
@@ -77,7 +90,8 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
-                            .queryParam("playStyle", "Anc"))
+                        .with(httpBasic("user1", "password"))
+                        .queryParam("playStyle", "Anc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.size()", is(10)));
     }
@@ -85,7 +99,8 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByName() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
-                .queryParam("playerName", "Kev"))
+                        .with(httpBasic("user1", "password"))
+                        .queryParam("playerName", "Kev"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.size()", is(4)));
     }
@@ -97,6 +112,7 @@ class PlayerControllerIT {
         playerMap.put("name","1234567890123456789012345678901234567890123456789012345678901234567890");
 
         MvcResult result = mockMvc.perform(patch("/players/patch/" + player.getId())
+                        .with(httpBasic("user1", "password"))
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(playerMap)))
