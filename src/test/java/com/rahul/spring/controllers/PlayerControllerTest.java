@@ -1,6 +1,7 @@
 package com.rahul.spring.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rahul.spring.config.SpringSecConfig;
 import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.services.PlayerService;
 import com.rahul.spring.services.PlayerServiceImpl;
@@ -11,6 +12,7 @@ import org.mockito.Captor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -24,10 +26,12 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.verify;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.hamcrest.core.Is.is;
 @WebMvcTest(PlayerController.class)
+@Import(SpringSecConfig.class)
 public class PlayerControllerTest {
 
     @Autowired
@@ -54,6 +58,7 @@ public class PlayerControllerTest {
         given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(1));
 
         mockMvc.perform(post("/players/add")
+                        .with(httpBasic("user1", "password"))
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(playerDTO)))
@@ -64,7 +69,8 @@ public class PlayerControllerTest {
     void testNotFoundException() throws Exception{
         given(playerService.getPlayerById(any(UUID.class))).willReturn(Optional.empty());
 
-        mockMvc.perform(get(PlayerController.APP_URI_GET_ID,UUID.randomUUID()))
+        mockMvc.perform(get(PlayerController.APP_URI_GET_ID,UUID.randomUUID())
+                        .with(httpBasic("user1", "password")) )
                 .andExpect(status().isNotFound());
     }
 
@@ -76,7 +82,8 @@ public class PlayerControllerTest {
         playerMap.put("name","Penaldo");
 
         mockMvc.perform(patch("/players/patch/" + playerDTO.getId())
-                .accept(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("user1", "password"))
+                        .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(playerMap)))
                 .andExpect(status().isNoContent());
@@ -92,7 +99,8 @@ public class PlayerControllerTest {
         PlayerDTO player = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
         given(playerService.removePlayer(any())).willReturn(true);
         mockMvc.perform(delete("/players/delete/" + player.getId())
-                .accept(MediaType.APPLICATION_JSON))
+                        .with(httpBasic("user1", "password"))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted());
 
         verify(playerService).removePlayer(uuidArgumentCaptor.capture());
@@ -105,7 +113,8 @@ public class PlayerControllerTest {
         PlayerDTO playerDTO = playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(0);
         given(playerService.editPlayer(any(), any())).willReturn(Optional.of(playerDTO));
         mockMvc.perform(put("/players/edit/"+playerDTO.getId())
-                .accept(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("user1", "password"))
+                        .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(playerDTO)))
                 .andExpect(status().isCreated());
@@ -120,7 +129,8 @@ public class PlayerControllerTest {
         given(playerService.addPlayer(any(PlayerDTO.class))).willReturn(playerServiceImpl.getAllPlayers(null, null, 1, 10).getContent().get(1));
 
         mockMvc.perform(post("/players/add")
-                .accept(MediaType.APPLICATION_JSON)
+                        .with(httpBasic("user1", "password"))
+                        .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(playerDTO)))
                 .andExpect(status().isCreated());
@@ -131,6 +141,7 @@ public class PlayerControllerTest {
         given(playerService.getAllPlayers(any(), any(), any(), any())).willReturn(playerServiceImpl.getAllPlayers(null, null, 1, 10));
 
         mockMvc.perform(get("/players/players")
+                        .with(httpBasic("user1", "password"))
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()", is(11)));
     }
@@ -142,7 +153,8 @@ public class PlayerControllerTest {
         given(playerService.getPlayerById(playerDTO.getId())).willReturn(Optional.of(playerDTO));
 
         mockMvc.perform(get(PlayerController.APP_URI_GET_ID, playerDTO.getId())
-                .accept(MediaType.APPLICATION_JSON))
+                        .with(httpBasic("user1", "password"))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(playerDTO.getId().toString())));
     }
