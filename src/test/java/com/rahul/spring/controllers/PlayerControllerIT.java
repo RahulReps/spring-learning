@@ -57,6 +57,7 @@ class PlayerControllerIT {
     @BeforeEach
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
+                .apply(springSecurity())
                 .apply(springSecurity()).build();
     }
 
@@ -70,7 +71,7 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByPlayerNameAndPlayStyle2() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
-                        .with(httpBasic("user1", "password"))
+                        .with(PlayerControllerTest.jwtReq)
                         .queryParam("playStyle", "Anc")
                         .queryParam("pageNumber", "1")
                         .queryParam("pageSize","5"))
@@ -81,7 +82,7 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByPlayerNameAndPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
-                        .with(httpBasic("user1", "password"))
+                        .with(PlayerControllerTest.jwtReq)
                         .queryParam("playStyle", "Anc")
                         .queryParam("playerName", "KEV"))
                 .andExpect(status().isOk())
@@ -90,7 +91,7 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByPlayStyle() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
-                        .with(httpBasic("user1", "password"))
+                        .with(PlayerControllerTest.jwtReq)
                         .queryParam("playStyle", "Anc"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.size()", is(10)));
@@ -99,7 +100,7 @@ class PlayerControllerIT {
     @Test
     void testGetPlayersByName() throws Exception {
         mockMvc.perform(get(PlayerController.GET_URI)
-                        .with(httpBasic("user1", "password"))
+                        .with(PlayerControllerTest.jwtReq)
                         .queryParam("playerName", "Kev"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content.size()", is(4)));
@@ -112,7 +113,7 @@ class PlayerControllerIT {
         playerMap.put("name","1234567890123456789012345678901234567890123456789012345678901234567890");
 
         MvcResult result = mockMvc.perform(patch("/players/patch/" + player.getId())
-                        .with(httpBasic("user1", "password"))
+                        .with(PlayerControllerTest.jwtReq)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(playerMap)))
