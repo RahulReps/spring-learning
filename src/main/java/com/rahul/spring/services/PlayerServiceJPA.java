@@ -5,6 +5,11 @@ import com.rahul.spring.mappers.PlayerMapper;
 import com.rahul.spring.model.PlayerDTO;
 import com.rahul.spring.repositories.PlayerRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.context.annotation.Primary;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,18 +23,24 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @Primary
 @RequiredArgsConstructor
 public class PlayerServiceJPA implements PlayerService {
     private final PlayerRepository playerRepository;
     private final PlayerMapper playerMapper;
+    private final CacheManager cacheManager;
 
     public static final int DEFAULT_PAGE = 0;
     public static final int DEFAULT_PAGE_SIZE = 10;
 
+    @Cacheable(cacheNames = "playerListCache")
     @Override
     public Page<PlayerDTO> getAllPlayers(String playerName, String playStyle, Integer pageNumber, Integer pageSize) {
+
+        log.info("List Beers - service");
+
         Page<Player> playerList;
         PageRequest pageRequest = this.pageRequestBuilder(pageNumber, pageSize);
 
@@ -81,18 +92,26 @@ public class PlayerServiceJPA implements PlayerService {
         return playerRepository.findAllByNameIsLikeIgnoreCase("%" + playerName + "%", pageRequest);
     }
 
+    @Cacheable(cacheNames = "playerCache", key = "#id")
     @Override
     public Optional<PlayerDTO> getPlayerById(UUID id) {
+        log.info("Get play by id - service");
         return Optional.ofNullable(playerMapper.playerToPlayerDto(playerRepository.findById(id).orElse(null)));
     }
 
     @Override
     public PlayerDTO addPlayer(PlayerDTO player) {
+        if(cacheManager.getCache("playerListCache") != null){
+            cacheManager.getCache("playerListCache").clear();
+        }
+
         return playerMapper.playerToPlayerDto(playerRepository.save(playerMapper.playerDtoToPlayer(player)));
     }
 
     @Override
     public Optional<PlayerDTO> editPlayer(UUID id, PlayerDTO playerDTO) {
+        clearCache(id);
+
         AtomicReference<Optional<PlayerDTO>> atomicReference = new AtomicReference<>();
 
         playerRepository.findById(id).ifPresentOrElse(player -> {
@@ -106,8 +125,25 @@ public class PlayerServiceJPA implements PlayerService {
         return atomicReference.get();
     }
 
+    private void clearCache(UUID id) {
+        if(cacheManager.getCache("playerListCache") != null){
+            cacheManager.getCache("playerListCache").clear();
+        }
+
+        if(cacheManager.getCache("playerCache") != null){
+            cacheManager.getCache("playerCache").evict(id);
+        }
+    }
+
+    //    @Caching(
+//            evict = {
+//                    @CacheEvict(cacheNames = "playerCache", key = "#id"),
+//                    @CacheEvict(cacheNames = "playerListCache")
+//            }
+//    )
     @Override
     public Boolean removePlayer(UUID id) {
+        clearCache(id);
         if(playerRepository.existsById(id)){
             playerRepository.deleteById(id);
             return true;
@@ -117,6 +153,10 @@ public class PlayerServiceJPA implements PlayerService {
 
     @Override
     public Boolean patchPlayer(UUID id, PlayerDTO playerDTO) {
+        clearCache(id);
+        cacheManager.getCache("playerCache").evict(id);
+        cacheManager.getCache("playerListCache").clear();
+
         AtomicReference<Boolean> result= new AtomicReference<>(true);
         playerRepository.findById(id).ifPresentOrElse(player -> {
             if(playerDTO.getName() != null){
